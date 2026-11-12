@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#071426"><title>ROBOT RACING — Classroom Studio</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <script async src="https://docs.opencv.org/4.x/opencv.js"></script>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">RR</div><div><b>ROBOT RACING</b><small>CLASSROOM STUDIO</small></div></div>
+    <nav id="mainNav">
+      <button class="nav-item active" data-page="home"><span>⌂</span><i data-i18n="home">Главная</i></button>
+      <button class="nav-item" data-page="templates"><span>▧</span><i data-i18n="templates">Шаблоны</i></button>
+      <button class="nav-item" data-page="scanner"><span>◎</span><i data-i18n="scanner">Сканер</i></button>
+      <button class="nav-item" data-page="garage"><span>▤</span><i data-i18n="garage">Гараж</i></button>
+      <button class="nav-item" data-page="races"><span>🏁</span><i data-i18n="races">Гонки</i></button>
+      <button class="nav-item" data-page="results"><span>▥</span><i data-i18n="results">Результаты</i></button>
+      <button class="nav-item" data-page="settings"><span>⚙</span><i data-i18n="settings">Настройки</i></button>
+    </nav>
+    <div class="sidebar-bottom"><div class="status-dot"></div><span data-i18n="local">Локальное хранилище активно</span><small>v1.0 • Offline-ready*</small></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div><div class="eyebrow">SCHOOL ROBOTICS • CREATIVE TECHNOLOGY</div><h1 id="pageTitle">Главная</h1></div>
+      <div class="top-actions"><select id="language" aria-label="Language"><option value="ru">РУС</option><option value="kk">ҚАЗ</option><option value="en">ENG</option></select><button class="icon-btn" id="soundToggle" title="Sound">♫</button><div class="teacher-chip"><span class="avatar">T</span><span>Teacher mode</span></div></div>
+    </header>
+    <section class="page active" id="page-home">
+      <div class="hero"><div><span class="pill">✦ YOUR CLASSROOM, YOUR GRID</span><h2>Every drawing has<br><em>a place on the track.</em></h2><p>Turn students’ hand-coloured vehicle designs into a real classroom racing experience.</p><div class="hero-actions"><button class="btn primary" data-go="scanner">◎ <span data-i18n="openScanner">Открыть сканер</span></button><button class="btn ghost" data-go="templates">＋ <span data-i18n="createTemplate">Создать шаблон</span></button></div></div><div class="hero-art"><div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="hero-car">🏎️</div><div class="speed-tag">READY<br><b>TO RACE</b></div></div></div>
+      <div class="stats-grid">
+        <article class="stat-card"><span class="stat-icon cyan">♟</span><small data-i18n="students">УЧЕНИКИ</small><strong id="statStudents">0</strong><span class="stat-note">Registered drivers</span></article>
+        <article class="stat-card"><span class="stat-icon blue">▤</span><small data-i18n="vehicles">МАШИНЫ</small><strong id="statVehicles">0</strong><span class="stat-note">In your garage</span></article>
+        <article class="stat-card"><span class="stat-icon purple">🏁</span><small data-i18n="completedRaces">ЗАВЕРШЁННЫЕ ГОНКИ</small><strong id="statRaces">0</strong><span class="stat-note">Race sessions</span></article>
+        <article class="stat-card"><span class="stat-icon orange">⏱</span><small data-i18n="bestLap">ЛУЧШИЙ КРУГ</small><strong id="statBest">—</strong><span class="stat-note">Fastest lap</span></article>
+      </div>
+      <div class="section-head"><div><div class="eyebrow">QUICK WORKFLOW</div><h3>Race day starts here</h3></div></div>
+      <div class="quick-grid">
+        <button class="quick-card" data-go="templates"><span class="quick-icon">▧</span><b data-i18n="createTemplate">Создать шаблон</b><small>Print a fresh colouring sheet</small><span class="arrow">↗</span></button>
+        <button class="quick-card" data-go="scanner"><span class="quick-icon">◎</span><b data-i18n="openScanner">Открыть сканер</b><small>Capture a student’s design</small><span class="arrow">↗</span></button>
+        <button class="quick-card" data-go="races"><span class="quick-icon">🏁</span><b data-i18n="startRace">Начать гонку</b><small>Choose drivers and hit the grid</small><span class="arrow">↗</span></button>
+        <button class="quick-card" data-go="garage"><span class="quick-icon">▤</span><b data-i18n="openGarage">Открыть гараж</b><small>Explore registered vehicles</small><span class="arrow">↗</span></button>
+      </div>
+      <div class="section-head"><div><div class="eyebrow">LATEST BUILDS</div><h3>Recently scanned vehicles</h3></div><button class="text-btn" data-go="garage">View garage →</button></div>
+      <div class="vehicle-grid compact" id="recentVehicles"><div class="empty-state">No vehicles yet. Scan your first student drawing!</div></div>
+    </section>
+    <section class="page" id="page-templates">
+      <div class="toolbar"><div><h3>Printable template library</h3><p>Choose a design, write student details, then print on A4.</p></div><button class="btn ghost" id="printAllTemplates">Print all templates</button><select id="templateCategory"><option value="all">All categories</option><option>Racing cars</option><option>Sports cars</option><option>Trucks</option><option>Buses</option><option>Robots</option><option>Monster trucks</option><option>Futuristic vehicles</option></select></div>
+      <div class="template-grid" id="templateGrid"></div>
+    </section>
+    <section class="page" id="page-scanner">
+      <div class="scanner-layout">
+        <div class="panel scanner-panel"><div class="panel-head"><div><h3>Teacher scanner</h3><p>Place the coloured sheet inside the camera frame.</p></div><span class="live-badge"><i></i> LIVE SCAN</span></div>
+          <div class="camera-stage"><video id="cameraVideo" autoplay playsinline muted></video><canvas id="scanCanvas" hidden></canvas><div class="camera-placeholder" id="cameraPlaceholder"><div class="camera-symbol">◎</div><b>Camera preview</b><span>Start camera or upload a photo of the worksheet</span></div><div class="scan-frame"><span></span><span></span><span></span><span></span></div></div>
+          <div class="camera-controls"><select id="cameraSelect"><option value="">Default camera</option></select><button class="btn primary" id="startCamera">Start camera</button><button class="btn ghost" id="capturePhoto">Capture</button><label class="btn ghost upload-btn">Upload photo<input id="imageUpload" type="file" accept="image/png,image/jpeg,image/webp"></label></div>
+          <div class="hint">Tip: Use even lighting, keep all four black corner markers visible, and avoid shadows.</div>
+        </div>
+        <div class="panel"><div class="panel-head"><div><h3>Extraction studio</h3><p>Review the cut-out before adding it to the garage.</p></div></div>
+          <div class="preview-stage"><canvas id="extractCanvas" width="600" height="380"></canvas><div class="preview-empty" id="previewEmpty">Your extracted vehicle<br>will appear here</div></div>
+          <div class="tool-row"><button class="tool-btn active" data-tool="erase">⌫ Erase</button><button class="tool-btn" data-tool="restore">＋ Restore</button><button class="tool-btn" id="rotateImage">↻ Rotate</button><button class="tool-btn" id="autoExtract">✦ Remove paper</button></div>
+          <div class="adjust-row"><label>Brush <input id="brushSize" type="range" min="5" max="60" value="22"></label><label>Brightness <input id="brightness" type="range" min="60" max="150" value="100"></label><label>Contrast <input id="contrast" type="range" min="60" max="160" value="100"></label></div>
+          <div class="form-row"><label>Template ID<input id="scanTemplateId" placeholder="Read from QR or choose manually"></label><button class="btn ghost" id="chooseTemplate">Choose template</button></div>
+          <button class="btn primary wide" id="registerVehicle" disabled>✓ Confirm extraction & register vehicle</button>
+        </div>
+      </div>
+    </section>
+    <section class="page" id="page-garage">
+      <div class="toolbar"><div><h3>Your classroom garage</h3><p>Every vehicle is an original student creation.</p></div><button class="btn primary" data-go="scanner">＋ Add vehicle</button></div>
+      <div class="filter-row"><input id="garageSearch" placeholder="Search student or vehicle…"><select id="garageClass"><option value="">All classes</option></select><select id="garageCategory"><option value="">All categories</option><option>Racing cars</option><option>Sports cars</option><option>Trucks</option><option>Buses</option><option>Robots</option><option>Monster trucks</option><option>Futuristic vehicles</option></select></div>
+      <div class="vehicle-grid" id="garageGrid"></div>
+    </section>
+    <section class="page" id="page-races">
+      <div class="race-config panel"><div><div class="eyebrow">RACE CONTROL</div><h3>Build your starting grid</h3><p>Select a track, lap count and 2–12 student vehicles.</p></div><div class="config-controls"><label>Track<select id="trackSelect"><option value="oval">Oval Circuit</option><option value="eight">Figure Eight</option><option value="obstacle">Obstacle Run</option></select></label><label>Laps<select id="lapSelect"><option>1</option><option selected>3</option><option>5</option></select></label></div></div>
+      <div class="race-layout"><div class="panel track-panel"><div class="panel-head"><div><h3 id="trackName">Oval Circuit</h3><p>Live race view • 2D track renderer</p></div><span class="live-badge" id="raceStatus">GRID READY</span></div><canvas id="raceCanvas" width="1000" height="600"></canvas><div class="race-controls"><button class="btn primary" id="raceStart">▶ Start race</button><button class="btn ghost" id="racePause" disabled>Ⅱ Pause</button><button class="btn ghost" id="raceRestart">↻ Restart</button><span class="race-clock" id="raceClock">00:00.0</span></div></div>
+        <div class="panel grid-panel"><div class="panel-head"><div><h3>Starting grid</h3><p id="participantCount">0 / 12 selected</p></div></div><div id="raceVehicleList" class="race-vehicle-list"></div><div class="leaderboard-mini"><h4>LIVE LEADERBOARD</h4><div id="liveLeaderboard"><p class="muted">Race positions will appear here.</p></div></div></div></div>
+    </section>
+    <section class="page" id="page-results">
+      <div class="toolbar"><div><h3>Race results</h3><p>Classroom history and student achievements.</p></div><div class="inline-actions"><select id="resultsClass"><option value="">All classes</option></select><button class="btn ghost" id="exportCsv">↓ Export CSV</button></div></div>
+      <div class="podium" id="podium"><div class="podium-empty">Complete a race to build your podium 🏆</div></div>
+      <div class="panel table-panel"><div class="panel-head"><h3>Race history</h3><span class="muted" id="resultCount">0 results</span></div><div class="table-scroll"><table><thead><tr><th>POS</th><th>DRIVER / VEHICLE</th><th>CLASS</th><th>LAPS</th><th>TOTAL TIME</th><th>BEST LAP</th><th>DATE</th></tr></thead><tbody id="resultsBody"><tr><td colspan="7" class="muted">No results yet.</td></tr></tbody></table></div></div>
+    </section>
+    <section class="page" id="page-settings">
+      <div class="settings-grid"><div class="panel"><h3>Classroom preferences</h3><label class="setting">Interface language<select id="settingsLanguage"><option value="ru">Русский</option><option value="kk">Қазақша</option><option value="en">English</option></select></label><label class="setting">Race sound<input type="checkbox" id="soundEnabled" checked></label><label class="setting">Master volume<input type="range" id="volume" min="0" max="100" value="35"></label></div>
+      <div class="panel"><h3>Data management</h3><p class="muted">Your garage, images and results are saved in this browser using IndexedDB. They are not automatically synchronized to other computers.</p><div class="stack-actions"><button class="btn primary" id="exportJson">↓ Export all data (JSON)</button><label class="btn ghost upload-btn">↑ Import JSON<input type="file" id="importJson" accept=".json,application/json"></label><button class="btn danger" id="clearData">Delete all local data</button></div></div>
+      <div class="panel full"><h3>About this first version</h3><p>Designed for a teacher-operated classroom workflow. QR codes contain opaque IDs only. The scanner includes automatic paper-background removal and manual brush correction; marker-based perspective correction is a best-effort enhancement, with photo upload and manual crop as fallback. Vehicle display is an honest 2.5D presentation of the student’s original drawing, not a fully reconstructed 3D object.</p><p class="muted">Camera access requires HTTPS or localhost. External libraries load from public CDNs, so the first page load requires an internet connection.</p></div></div>
+    </section>
+    <footer>ROBOT RACING <span>•</span> Made for curious minds <span class="footer-right">Local-first classroom platform</span></footer>
+  </main>
+</div>
+<div class="modal-backdrop" id="modalBackdrop"><div class="modal" id="modal"><button class="modal-close" id="modalClose">×</button><div id="modalContent"></div></div></div>
+<div class="toast" id="toast"></div>
+<script type="module" src="./js/app.js"></script>
+</body></html>
